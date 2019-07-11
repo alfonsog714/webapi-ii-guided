@@ -2,6 +2,7 @@
 
 const express = require("express");
 const router = express.Router();
+const Hubs = require("./hubs-model.js");
 
 router.use(express.json());
 
