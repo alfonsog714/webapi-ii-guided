@@ -86,4 +86,35 @@ router.put("/:id", async (req, res) => {
   }
 });
 
+// add an endpoint that returns all the messages for a hub
+router.get("/:id/messages", async (req, res) => {
+  console.log("hit");
+  const { id } = req.params;
+
+  try {
+    const messages = await Hubs.findHubMessages(id);
+    res.status(200).json(messages);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message:
+        "Error retrieving the messages related to the hub with an id of " + id
+    });
+  }
+});
+
+// add an endpoint that adds a new message to a hub
+// test it with { hub_id: 1, sender: "me", text: "you pick a text"}
+router.post("/:id/messages", async (req, res) => {
+  const message = req.body;
+
+  Hubs.addMessage(message)
+    .then(result => {
+      res.status(201).json(result);
+    })
+    .catch(error => {
+      res.status(500).json(error);
+    });
+});
+
 module.exports = router;
