@@ -106,15 +106,22 @@ router.get("/:id/messages", async (req, res) => {
 // add an endpoint that adds a new message to a hub
 // test it with { hub_id: 1, sender: "me", text: "you pick a text"}
 router.post("/:id/messages", async (req, res) => {
-  const message = req.body;
-
-  Hubs.addMessage(message)
-    .then(result => {
-      res.status(201).json(result);
-    })
-    .catch(error => {
-      res.status(500).json(error);
-    });
+  if (!isValidMessage(req.body)) {
+    res.status(400).json({ message: `No sender and/or text!` }); // either set a return here, or make an else statement
+  } else {
+    Hubs.addMessage(req.body) // can also do something like {hub_id: req.params.id, ...req.body}
+      .then(result => {
+        res.status(201).json(result);
+      })
+      .catch(error => {
+        res.status(500).json(error);
+      });
+  }
 });
+
+isValidMessage = message => {
+  const { sender, text, hub_id } = message;
+  return sender && text && hub_id;
+};
 
 module.exports = router;
